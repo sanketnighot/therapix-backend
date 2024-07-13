@@ -36,9 +36,9 @@
   },
   "lint-staged": {
     "*.ts": [
-      "npm run format",
-      "npm run lint:fix",
-      "npm run lint"
+      "yarn run format",
+      "yarn run lint:fix",
+      "yarn run lint"
     ]
   }
 }
