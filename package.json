@@ -37,7 +37,7 @@
     "prettier": "^3.3.2"
   },
   "lint-staged": {
-    "*.ts": [
+    "src/**/*.js": [
       "yarn run format",
       "yarn run lint:fix",
       "yarn run lint"
