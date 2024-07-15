@@ -3,6 +3,8 @@ import asyncHandler from "../utils/asyncHandler.js"
 import User from "../models/user.model.js"
 import ApiResponse from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
+import Advisor from "../models/advisor.model.js"
+import Client from "../models/client.model.js"
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -32,6 +34,11 @@ const registerUser = asyncHandler(async (req, res) => {
     languages,
     gender,
     communicationPreference,
+    licenseNumber,
+    specialization,
+    experience,
+    qualification,
+    status,
   } = req.body
 
   // validations
@@ -72,6 +79,22 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for user creation
   if (!createdUser) {
     throw new ApiError(500, "Error while registration")
+  }
+
+  // Create advisor and client documents according to the role
+  if (role === "advisor") {
+    await Advisor.create({
+      userId: createdUser._id,
+      licenseNumber,
+      specialization,
+      experience,
+      qualification,
+      status,
+    })
+  } else if (role === "client") {
+    await Client.create({
+      userId: createdUser._id,
+    })
   }
 
   // return response
@@ -255,7 +278,43 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, updatedUserData, "User Updated Successfully"))
   } catch (error) {
-    throw ApiError(
+    throw new ApiError(
+      500,
+      error?.message || "An error occurred while updating user details"
+    )
+  }
+})
+
+const updateAdvisorDetails = asyncHandler(async (req, res) => {
+  try {
+    // Fetch the current user details
+    const user = await Advisor.findOne({ userId: req.user._id })
+
+    // Validate if user role is 'advisor'
+    if (!user) {
+      throw new ApiError(403, "You are not authorized to perform this action")
+    }
+
+    // Extract new advisor details from request body
+    const updates = req.body
+
+    // Dynamically update user fields based on what's provided in the request
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] !== undefined) {
+        user[key] = updates[key]
+      }
+    })
+    // Save the updated user document
+    await user.save({ validateBeforeSave: false })
+    // Return the updated user details without sensitive information
+    const updatedUserData = await Advisor.findOne({ userId: req.user._id })
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedUserData, "Advisor Updated Successfully")
+      )
+  } catch (error) {
+    throw new ApiError(
       500,
       error?.message || "An error occurred while updating user details"
     )
@@ -270,4 +329,5 @@ export {
   changeCurrentPassword,
   getCurrentUser,
   updateAccountDetails,
+  updateAdvisorDetails,
 }
