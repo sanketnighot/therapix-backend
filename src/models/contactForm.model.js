@@ -4,20 +4,24 @@ const contactFormSchema = new Schema(
   {
     email: {
       type: String,
-      required: true,
+      required: [true, "Email Id is required"],
     },
     name: {
       type: String,
-      required: true,
+      required: [true, "Full Name is required"],
     },
     message: {
       type: String,
-      required: true,
+      required: [true, "Your message is required"],
+    },
+    responded: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
 )
 
-const Newsletter = mongoose.model("Newsletter", contactFormSchema)
+const ContactForm = mongoose.model("ContactForm", contactFormSchema)
 
-export default Newsletter
+export default ContactForm
