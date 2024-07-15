@@ -2,6 +2,10 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import ApiError from "./utils/ApiError.js"
+import logger from "./utils/logger.js"
+import morgan from "morgan"
+
+const morganFormat = ":method :url :status: :response-time ms"
 
 const app = express()
 
@@ -11,10 +15,29 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+// Configuring logger
+app.use(
+  morgan(morganFormat, {
+    stream: {
+      write: (message) => {
+        const logObject = {
+          method: message.split(" ")[0],
+          url: message.split(" ")[1],
+          status: message.split(" ")[2],
+          responseTime: message.split(" ")[3] + " ms",
+        }
+        logger.info(JSON.stringify(logObject))
+      },
+    },
+  })
+)
+
 // Routes Import
 import userRouter from "./routes/user.routes.js"
+import healthCheck from "./routes/healthCheck.routes.js"
 
 // Routes Declaration
+app.use("/api/v1/healthCheck", healthCheck)
 app.use("/api/v1/users", userRouter)
 app.get("/", (req, res) => {
   try {
@@ -26,6 +49,12 @@ app.get("/", (req, res) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
+    logger.error(
+      JSON.stringify({
+        message: err.message || "Internal Server Error",
+        ip: req.ip,
+      })
+    )
     res.status(err.statusCode).json({
       statusCode: err.statusCode,
       success: err.success,
@@ -34,6 +63,14 @@ app.use((err, req, res, next) => {
       stack: err.stack,
     })
   } else {
+    logger.error(
+      JSON.stringify({
+        message: err.message || "Internal Server Error",
+        url: req.url,
+        status: 500,
+        ip: req.ip,
+      })
+    )
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
