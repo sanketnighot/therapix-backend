@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8000
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      logger.info(`⚙️ Server is running on port ${PORT}`)
+      logger.info(`Server is running on port ${PORT}`)
     })
   })
-  .catch((err) => logger.info("❌ MONGODB Connection Failed !!! ", err))
+  .catch((err) => logger.error("MONGODB Connection Failed !!! ", err))
