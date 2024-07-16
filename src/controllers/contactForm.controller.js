@@ -26,53 +26,60 @@ const submitContactForm = asyncHandler(async (req, res) => {
 })
 
 const updateContactFormStatus = asyncHandler(async (req, res) => {
-  const { id, status } = req.body
-
-  if (status === "read") {
-    const contactForm = await ContactForm.findByIdAndUpdate(
-      id,
-      { responded: true },
-      { new: true }
-    )
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, contactForm, "Contact Form Updated Successfully")
+  try {
+    const { id, status } = req.body
+    if (status === "read") {
+      const contactForm = await ContactForm.findByIdAndUpdate(
+        id,
+        { responded: true },
+        { new: true }
       )
-  } else if (status === "unread") {
-    const contactForm = await ContactForm.findByIdAndUpdate(
-      id,
-      {
-        responded: false,
-      },
-      { new: true }
-    )
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, contactForm, "Contact Form Updated Successfully")
+      res
+        .status(200)
+        .json(
+          new ApiResponse(200, contactForm, "Contact Form Updated Successfully")
+        )
+    } else if (status === "unread") {
+      const contactForm = await ContactForm.findByIdAndUpdate(
+        id,
+        {
+          responded: false,
+        },
+        { new: true }
       )
-  } else {
-    throw new ApiError(400, "Invalid status")
+      res
+        .status(200)
+        .json(
+          new ApiResponse(200, contactForm, "Contact Form Updated Successfully")
+        )
+    } else {
+      throw new ApiError(400, "Invalid status")
+    }
+  } catch (error) {
+    throw new ApiError(400, error.message, "Error Updating Status")
   }
 })
 
 const getContactForms = asyncHandler(async (req, res) => {
-  const { type } = req.query
-  let fetchType = {}
-  if (type === "read") {
-    fetchType = { responded: true }
-  } else if (type === "unread") {
-    fetchType = { responded: false }
+  try {
+    const { type } = req.query
+    let fetchType = {}
+    if (type === "read") {
+      fetchType = { responded: true }
+    } else if (type === "unread") {
+      fetchType = { responded: false }
+    }
+    let contactForms = await ContactForm.find(fetchType)
+    const data = {
+      contactForms: contactForms,
+      total: contactForms.length,
+    }
+    res
+      .status(200)
+      .json(new ApiResponse(200, data, "Contact Forms Fetched Successfully"))
+  } catch (error) {
+    throw new ApiError(400, error.message, "Error Fetching Contact Forms")
   }
-  let contactForms = await ContactForm.find(fetchType)
-  const data = {
-    contactForms: contactForms,
-    total: contactForms.length,
-  }
-  res
-    .status(200)
-    .json(new ApiResponse(200, data, "Contact Forms Fetched Successfully"))
 })
 
 export { submitContactForm, getContactForms, updateContactFormStatus }

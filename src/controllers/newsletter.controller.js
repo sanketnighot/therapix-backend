@@ -12,9 +12,7 @@ const subscribeToNewsletter = asyncHandler(async (req, res) => {
         new ApiResponse(200, subscribe, "Newletter Subscribed Successfully")
       )
   } catch (error) {
-    return res
-      .status(400)
-      .json(new ApiError(400, error.message, "Error Subscribing to Newsletter"))
+    throw new ApiError(400, error.message, "Error Subscribing to Newsletter")
   }
 })
 
@@ -35,25 +33,25 @@ const unsubscribeToNewsLetter = asyncHandler(async (req, res) => {
         )
       )
   } catch (error) {
-    return res
-      .status(400)
-      .json(
-        new ApiError(400, error.message, "Error Unsubscribing to Newsletter")
-      )
+    throw new ApiError(400, error.message, "Error Unsubscribing to Newsletter")
   }
 })
 
 const getAllSubscriptions = asyncHandler(async (req, res) => {
-  const subscriptions = await Newsletter.find({})
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        200,
-        { subscriptions: subscriptions, total: subscriptions.length },
-        "Subscriptions fetched successfully"
+  try {
+    const subscriptions = await Newsletter.find({})
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(
+          200,
+          { subscriptions: subscriptions, total: subscriptions.length },
+          "Subscriptions fetched successfully"
+        )
       )
-    )
+  } catch (error) {
+    throw new ApiError(400, error.message, "Error fetching subscriptions")
+  }
 })
 
 export { subscribeToNewsletter, unsubscribeToNewsLetter, getAllSubscriptions }
