@@ -7,8 +7,8 @@ import {
 
 const router = Router()
 
-router.post("/", submitContactForm)
-router.patch("/", updateContactFormStatus)
-router.get("/", getContactForms)
+router.route("/").post(submitContactForm)
+router.route("/").patch(updateContactFormStatus)
+router.route("/").get(getContactForms)
 
 export default router

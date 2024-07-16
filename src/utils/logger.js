@@ -10,7 +10,7 @@ const logger = createLogger({
   level: "debug",
   format: combine(
     prettyPrint(),
-    timestamp({ format: "DD:MM:YY HH:mm:ss" }),
+    timestamp({ format: "DD/MM/YY HH:mm:ss" }),
     myFormat
   ),
   transports: [
@@ -26,7 +26,7 @@ const logger = createLogger({
     new transports.Console({
       format: combine(
         format.colorize(),
-        timestamp({ format: "DD:MM:YY HH:mm:ss" }),
+        timestamp({ format: "DD/MM/YY HH:mm:ss" }),
         myFormat
       ),
     }),
