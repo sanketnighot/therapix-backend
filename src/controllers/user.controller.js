@@ -310,31 +310,15 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 const updateAdvisorDetails = asyncHandler(async (req, res) => {
   try {
     // Fetch the current user details
-    const user = await Advisor.findOne({ userId: req.user._id })
+    const user = await Advisor.findOneAndUpdate(
+      { userId: req.user._id },
+      req.body,
+      { new: true }
+    )
 
-    // Validate if user role is 'advisor'
-    if (!user) {
-      throw new ApiError(403, "You are not authorized to perform this action")
-    }
-
-    // Extract new advisor details from request body
-    const updates = req.body
-
-    // Dynamically update user fields based on what's provided in the request
-    Object.keys(updates).forEach((key) => {
-      if (updates[key] !== undefined) {
-        user[key] = updates[key]
-      }
-    })
-    // Save the updated user document
-    await user.save({ validateBeforeSave: false })
-    // Return the updated user details without sensitive information
-    const updatedUserData = await Advisor.findOne({ userId: req.user._id })
-    res
+    return res
       .status(200)
-      .json(
-        new ApiResponse(200, updatedUserData, "Advisor Updated Successfully")
-      )
+      .json(new ApiResponse(200, user, "Advisor Updated Successfully"))
   } catch (error) {
     throw new ApiError(
       500,
