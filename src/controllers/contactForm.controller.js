@@ -31,9 +31,7 @@ const updateContactFormStatus = asyncHandler(async (req, res) => {
   if (status === "read") {
     const contactForm = await ContactForm.findByIdAndUpdate(
       id,
-      {
-        responded: true,
-      },
+      { responded: true },
       { new: true }
     )
     res
