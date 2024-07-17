@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose"
 
 const availabilitySchema = new Schema(
   {
-    date: {
+    slotDate: {
       type: Date,
       required: true,
     },
@@ -18,9 +18,15 @@ const availabilitySchema = new Schema(
       type: Number,
       required: true,
     },
-    advisor: {
+    advisorId: {
       type: Schema.Types.ObjectId,
-      ref: "Advisor",
+      ref: "User",
+      required: true,
+    },
+    booked: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
   },
   { timestamps: true }

@@ -32,19 +32,6 @@ app.use(
   })
 )
 
-// Routes Import
-import userRouter from "./routes/user.routes.js"
-import healthCheckRouter from "./routes/healthCheck.routes.js"
-import contactFormRouter from "./routes/contactForm.routes.js"
-import newsletterRouter from "./routes/newsletter.routes.js"
-import serviceRouter from "./routes/service.routes.js"
-
-// Routes Declaration
-app.use("/api/v1/healthCheck", healthCheckRouter)
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/contactForms", contactFormRouter)
-app.use("/api/v1/newsletter", newsletterRouter)
-app.use("/api/v1/service", serviceRouter)
 app.get("/", (req, res) => {
   try {
     res.status(200).json({ message: "Connected to Therapix API" })
@@ -52,6 +39,22 @@ app.get("/", (req, res) => {
     res.status(500).json({ message: error.message })
   }
 })
+
+// Routes Import
+import userRouter from "./routes/user.routes.js"
+import healthCheckRouter from "./routes/healthCheck.routes.js"
+import contactFormRouter from "./routes/contactForm.routes.js"
+import newsletterRouter from "./routes/newsletter.routes.js"
+import serviceRouter from "./routes/service.routes.js"
+import appointmentRouter from "./routes/appointment.routes.js"
+
+// Routes Declaration
+app.use("/api/v1/healthCheck", healthCheckRouter)
+app.use("/api/v1/users", userRouter)
+app.use("/api/v1/contactForms", contactFormRouter)
+app.use("/api/v1/newsletter", newsletterRouter)
+app.use("/api/v1/service", serviceRouter)
+app.use("/api/v1/appointment", appointmentRouter)
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
