@@ -47,6 +47,7 @@ import contactFormRouter from "./routes/contactForm.routes.js"
 import newsletterRouter from "./routes/newsletter.routes.js"
 import serviceRouter from "./routes/service.routes.js"
 import appointmentRouter from "./routes/appointment.routes.js"
+import reviewRouter from "./routes/review.routes.js"
 
 // Routes Declaration
 app.use("/api/v1/healthCheck", healthCheckRouter)
@@ -55,6 +56,7 @@ app.use("/api/v1/contactForms", contactFormRouter)
 app.use("/api/v1/newsletter", newsletterRouter)
 app.use("/api/v1/service", serviceRouter)
 app.use("/api/v1/appointment", appointmentRouter)
+app.use("/api/v1/review", reviewRouter)
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {

@@ -12,6 +12,10 @@ const reviewSchema = new Schema(
       ref: "Advisor",
       required: true,
     },
+    serviceId: {
+      type: Schema.Types.ObjectId,
+      ref: "Service",
+    },
     rating: {
       type: Number,
       min: 0,
