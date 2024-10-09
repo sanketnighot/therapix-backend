@@ -9,6 +9,7 @@ const userSchema = new Schema(
       required: [true, "Username is required"],
       unique: true,
       trim: true,
+      lowercase: true,
       index: true,
     },
     password: {
@@ -16,7 +17,7 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
       trim: true,
     },
-    refereshToken: {
+    refreshToken: {
       type: String,
     },
     email: {
@@ -24,12 +25,14 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
     role: {
       type: String,
       required: [true, "User Role is required"],
       trim: true,
-    }, // 'client' or 'therapist'
+      enum: ["client", "advisor"],
+    }, // 'client' or 'advisor'
     isAnonymous: {
       type: Boolean,
       trim: true,
@@ -50,9 +53,13 @@ const userSchema = new Schema(
     },
     communicationPreference: {
       type: String,
+      default: "email",
+      enum: ["phone", "email"],
     }, // 'phone', 'email', etc.
     profileStatus: {
       type: String,
+      default: "active",
+      enum: ["active", "disabled", "private", "public", "archived"],
     }, // 'active', 'disabled', 'private', 'public', 'archived'
   },
   { timestamps: true }
@@ -60,9 +67,7 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next()
-
-  this.password = bcrypt.hash(this.password, 12)
-
+  this.password = await bcrypt.hash(this.password, 12)
   next()
 })
 
@@ -94,4 +99,6 @@ userSchema.methods.generateRefreshToken = async function () {
   )
 }
 
-export const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema)
+
+export default User
